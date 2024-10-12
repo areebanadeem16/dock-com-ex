@@ -1,0 +1,13 @@
+According to my understanding, the conatiners shares with the host the following things:
+
+- Kernel
+- Network
+- File system
+- Processes
+
+Here, containers work on using host's kernel. It helps them run without having a whole OS, which makes them lightwight.
+While sharing the host's network containers can communicate within and outside. Even though
+containers have their own filesystem, they have the ability to access the host's filesystem
+for things such as disk space etc. Host is able to see on what processes are the containers running on,
+while having their own processes. The containers run in isolation along with having access to certain things
+of the provided host. 

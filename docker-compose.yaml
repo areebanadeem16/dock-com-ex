@@ -1,0 +1,13 @@
+version: '3'
+services:
+  srvc1:
+    build: ./srvc1
+    ports:
+      - "8199:8199"
+    depends_on:
+      - srvc2
+
+  srvc2:
+    build: ./srvc2
+    expose:
+      - "8199"
