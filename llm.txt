@@ -1,4 +1,0 @@
-I have used ChatGPT for my help in this assignment. The reason to use it was to have a 
-clear understanding of the assignment. It helped me understand and clear my certain concepts
-regarding docker and conatinerization. There might have been a few mistakes about the naming
-conventions and directories paths etc which were solved when I mentionaed my structure to it. 

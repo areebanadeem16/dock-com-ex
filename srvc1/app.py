@@ -4,19 +4,59 @@ import subprocess
 import requests
 import time
 import sys
+import psutil
+import platform
 import docker
-from flask_cors import CORS
 
 app = Flask(__name__)
-CORS(app, resources={r"/*": {"origins": "*"}})
+
+def get_ip_address():
+    try:
+        if platform.system() == "Windows":
+            ip = subprocess.check_output("ipconfig", shell=True).decode()
+            lines = [line.strip() for line in ip.split("\n") if "IPv4 Address" in line]
+            return lines[0].split(":")[1].strip() if lines else "Unknown IP"
+        else:
+            ip = subprocess.check_output("hostname -I", shell=True).decode().strip()
+            return ip
+    except Exception as e:
+        return f"Error fetching IP: {str(e)}"
+
+def get_running_processes():
+    try:
+        if platform.system() == "Windows":
+            processes = subprocess.check_output("tasklist", shell=True).decode('utf-8', 'ignore')
+        else:
+            processes = subprocess.check_output("ps -ax", shell=True).decode('utf-8', 'ignore')
+        return processes
+    except Exception as e:
+        return f"Error fetching processes: {str(e)}"
+
+def get_disk_space():
+    try:
+        if platform.system() == "Windows":
+            disk_space = subprocess.check_output(
+                "wmic logicaldisk get size,freespace,caption", shell=True
+            ).decode()
+        else:
+            disk_space = subprocess.check_output("df -h /", shell=True).decode('utf-8', 'ignore')
+        return disk_space
+    except Exception as e:
+        return f"Error fetching disk space: {str(e)}"
+
+def get_uptime():
+    try:
+        uptime_seconds = time.time() - psutil.boot_time()
+        uptime_hours = uptime_seconds / 3600
+        return f"System uptime: {uptime_hours:.2f} hours"
+    except Exception as e:
+        return f"Error fetching uptime: {str(e)}"
 
 @app.route('/stop-instances', methods=['POST'])
 def stop_instances():
     try:
         client = docker.from_env()
-        # Get all running containers
         containers = client.containers.list()
-        # Stop and remove all containers
         for container in containers:
             print(f"Stopping container: {container.name}")
             container.stop()
@@ -31,40 +71,24 @@ def stop_instances():
         traceback.print_exc()  # Logs the stack trace
         return jsonify({"status": "An error occurred", "error": str(e)}), 500
 
-@app.route('/stop', methods=['POST'])
-def stop():
-    try:
-        # Call the shell script to stop Docker services
-        subprocess.run(["bash", "docker-stop.sh"], check=True)
-        return jsonify({"status": "Services stopped successfully"}), 200
-    except subprocess.CalledProcessError as e:
-        print(f"Error executing docker-stop.sh: {e}")
-        return jsonify({"status": "Error stopping services", "error": str(e)}), 500
-    except Exception as e:
-        print(f"Unexpected error occurred: {e}")
-        return jsonify({"status": "An unexpected error occurred", "error": str(e)}), 500
-
-def get_system_info():
-    return {
-        "ip_address": subprocess.getoutput("hostname -I").strip(),
-        "running_processes": subprocess.getoutput("ps -ax"),
-        "available_disk_space": subprocess.getoutput("df -h /"),
-        "uptime": subprocess.getoutput("uptime -p")
-    }
-
 @app.route('/service1')
 def index():
-    print("calling....")
     service1_info = get_system_info()
-
-    # Call Service 2 (assumed to run on the same Docker network)
     service2_info = requests.get('http://srvc2:8199').json()
 
-    time.sleep(2)  # Delay response
+    time.sleep(2)
     return jsonify({
         "Service1": service1_info,
         "Service2": service2_info
     })
+
+def get_system_info():
+    return {
+        "ip_address": get_ip_address(),
+        "running_processes": get_running_processes(),
+        "available_disk_space": get_disk_space(),
+        "uptime": get_uptime()
+    }
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=8199)

@@ -12,7 +12,7 @@ services:
       replicas: 3
     networks:
       - app-network
-    stop_grace_period: 20s  # Allow 20 seconds for a graceful shutdown
+    stop_grace_period: 20s  
 
   srvc2:
     build: 
@@ -21,7 +21,7 @@ services:
       - "8199"
     networks:
       - app-network
-    stop_grace_period: 20s  # Allow 20 seconds for a graceful shutdown
+    stop_grace_period: 20s  
 
 
   nginx:
@@ -37,7 +37,7 @@ services:
       - srvc2
     networks:
       - app-network
-    stop_grace_period: 20s  # Allow 20 seconds for a graceful shutdown
+    stop_grace_period: 20s  
 
     
 networks:

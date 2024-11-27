@@ -1,0 +1,20 @@
+$ docker container ls
+CONTAINER ID   IMAGE               COMMAND                  CREATED          STATUS          PORTS                  NAMES
+f49d838f2f8f   nginx:latest        "/docker-entrypoint.…"   45 seconds ago   Up 43 seconds   0.0.0.0:8198->80/tcp   dock-comex4-nginx-1
+a2af20b6e217   dock-comex4-srvc2   "docker-entrypoint.s…"   45 seconds ago   Up 44 seconds   8199/tcp               dock-comex4-srvc2-1
+4e916e1a5013   dock-comex4-srvc1   "python app.py"          3 minutes ago    Up 44 seconds   8199/tcp               dock-comex4-srvc1-3
+b6f7f15a0797   dock-comex4-srvc1   "python app.py"          3 minutes ago    Up 43 seconds   8199/tcp               dock-comex4-srvc1-2
+b82ae8585264   dock-comex4-srvc1   "python app.py"          3 minutes ago    Up 43 seconds   8199/tcp               dock-comex4-srvc1-1
+
+
+
+
+$ docker network ls
+NETWORK ID     NAME                      DRIVER    SCOPE
+6edd5107d195   bridge                    bridge    local
+5c374b4c3160   dock-comex4_app-network   bridge    local
+bb45be26fab6   dock-comex4_app_network   bridge    local
+3ef4dbc6f039   dock-comex_default        bridge    local
+3e4c9a3a2ef5   docker_default            bridge    local
+c75259273e5a   host                      host      local
+69aecec95d6a   none                      null      local

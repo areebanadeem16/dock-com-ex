@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Service Interface</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+
+    .btn {
+      display: inline-block;
+      font-size: 16px;
+      padding: 10px 20px;
+      margin: 10px 5px;
+      text-align: center;
+      cursor: pointer;
+      text-decoration: none;
+      border: none;
+      border-radius: 5px;
+      transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+
+    .btn-success {
+      background-color: #28a745;
+      color: white;
+    }
+
+    .btn-error {
+      background-color: #dc3545;
+      color: white;
+    }
+
+    .btn-success:hover {
+      background-color: #218838;
+      transform: scale(1.05);
+    }
+
+    .btn:active {
+      transform: scale(0.95);
+    }
+
+    #output {
+      display: block;
+      width: 100%;
+      max-width: 600px;
+      margin: 20px 0;
+      padding: 10px;
+      font-size: 14px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      resize: vertical;
+    }
+
+    body > * {
+      text-align: center;
+    }
+
+    .controls {
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .buttons {
+      display: flex;
+      justify-content: center;
+    }
+  </style>
+  <script>
+    async function sendRequest() {
+      const response = await fetch('/service1');
+      const data = await response.json();
+      document.getElementById('output').value = JSON.stringify(data, null, 2);
+    }
+
+    async function stopServices() {
+      try {
+        const response = await fetch('/stop-instances', {method: 'POST'});
+      } catch (error) {
+        console.error('Error stopping services:', error);
+      }
+    }
+  </script>
+</head>
+<body>
+  <h1>Welcome</h1>
+  <div class="controls">
+    <textarea id="output" rows="25" cols="50"></textarea>
+    <div class="buttons">
+      <button onclick="sendRequest()" class="btn btn-success">REQUEST</button>
+      <button onclick="stopServices()" class="btn btn-error">STOP</button>
+    </div>
+  </div>
+</body>
+</html>
