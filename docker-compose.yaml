@@ -1,13 +1,45 @@
 version: '3'
+
 services:
   srvc1:
-    build: ./srvc1
-    ports:
-      - "8199:8199"
-    depends_on:
-      - srvc2
-
-  srvc2:
-    build: ./srvc2
+    build: 
+      context: ./srvc1
     expose:
       - "8199"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    deploy:
+      replicas: 3
+    networks:
+      - app-network
+    stop_grace_period: 20s  # Allow 20 seconds for a graceful shutdown
+
+  srvc2:
+    build: 
+      context: ./srvc2
+    expose:
+      - "8199"
+    networks:
+      - app-network
+    stop_grace_period: 20s  # Allow 20 seconds for a graceful shutdown
+
+
+  nginx:
+    image: nginx:latest
+    ports:
+      - "8198:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+      - ./.htpasswd:/etc/nginx/.htpasswd
+      - ./index.html:/usr/share/nginx/html/index.html
+    depends_on:
+      - srvc1
+      - srvc2
+    networks:
+      - app-network
+    stop_grace_period: 20s  # Allow 20 seconds for a graceful shutdown
+
+    
+networks:
+  app-network:
+    driver: bridge
